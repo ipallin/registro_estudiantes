@@ -1,0 +1,76 @@
+{
+    "alumnos":[
+      {
+        "id":0,
+        "nombre": "Jonathan",
+        "apellido": "Jimenez",
+        "turno": "Mañana"
+      },
+      {
+        "id":1,
+        "nombre": "Martha",
+        "apellido": "Diaz",
+        "turno": "Tarde"
+      },
+      {
+        "id":2,
+        "nombre": "Pamela",
+        "apellido": "Rios",
+        "turno": "Intensivo"
+      },
+      {
+        "id":3,
+        "nombre": "Alberto",
+        "apellido": "Sanchez",
+        "turno": "Intensivo"
+      },
+      {
+        "id":4,
+        "nombre": "Monica",
+        "apellido": "Alejo",
+        "turno": "Tarde"
+      },
+      {
+        "id":5,
+        "nombre": "Marcos",
+        "apellido": "Leon",
+        "turno": "Mañana"
+      },
+      {
+        "id":6,
+        "nombre": "Maria",
+        "apellido": "de la Rosa",
+        "turno": "Mañana"
+      },
+      {
+        "id":7,
+        "nombre": "Mateo",
+        "apellido": "Torres",
+        "turno": "Intensivo"
+      },
+      {
+        "id":8,
+        "nombre": "Magdalena",
+        "apellido": "Rojo",
+        "turno": "Tarde"
+      },
+      {
+        "id":9,
+        "nombre": "Lucas",
+        "apellido": "Reyes",
+        "turno": "Mañana"
+      },
+      {
+        "id":10,
+        "nombre": "Esther",
+        "apellido": "Rueda",
+        "turno": "Intensivo"
+      },
+      {
+        "id":11,
+        "nombre": "Juan",
+        "apellido": "Moreno",
+        "turno": "Tarde"
+      }
+    ]
+  }
