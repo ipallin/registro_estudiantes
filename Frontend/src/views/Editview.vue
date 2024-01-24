@@ -1,38 +1,38 @@
 <script setup>
-    import {ref, onMounted, h} from "vue";
+    import {ref, onMounted} from "vue";
     import { useRoute } from 'vue-router'; 
     import Header from "../components/Header.vue";
     import Warning from "../components/Warning.vue";
-    import alumnos from "../assets/mockdata/studentts.json";
     import {ModalType} from "../types.js";
+    import {get_Student, edit_student} from "../apiservice"
 
     const route = useRoute();
 
-    const stdlist = ref(alumnos.alumnos);
     const student = ref({});
 
-    const studentmap = ref({});
     const Studentname = ref();
     const Studentlastname = ref();
-    const Studentturn = ref()
-    const modaltype = ref()
+    const Studentturn = ref();
+    const date = ref();
+    
 
     const warningtitle = ref("")
     const warningtext = ref("")
     const warningok = ref(Function)
     const warningcancel = ref(Function)
     const attr = new Array()
+    const modaltype = ref()
 
-    onMounted(()=>{
+    onMounted(async()=>{
         const param = Number(route.params.student);
-        studentmap.value = stdlist.value.map((obj) => studentmap.value[obj.id]=obj);
-        student.value = studentmap.value[param]
-        Studentname.value = student.value.nombre
-        Studentlastname.value = student.value.apellido
-        Studentturn.value = student.value.turno
+        student.value = await get_Student(param)
+        Studentname.value = student.value.name
+        Studentlastname.value = student.value.lastname
+        Studentturn.value = student.value.shift
+        date.value = student.value.startDate
         let turnos = document.getElementsByName("turno")
         for (let turno of turnos){
-            turno.checked = turno.value.toLowerCase() == Studentturn.value.toLowerCase();
+            turno.checked = turno.value == Studentturn.value;
             turno.addEventListener('change',() => {
                 Studentturn.value = turno.value
             })
@@ -51,13 +51,30 @@
     }
 
     function overwriteStudent() {
-        let modal = document.getElementById("modal")
-        modal.style.display= "block"
-        warningtitle.value = "Edición Guardada"
-        warningtext.value = "Tus cambios se han guardado correctamente"
-        warningok.value=exitEditing
-        warningcancel.value=exitEditing
-        modaltype.value=ModalType['info']
+        const param = Number(route.params.student);
+        let startdate = new Date(date.value)
+        let endate = new Date(date.value)
+        const theDayOfTheMonthOnNextWeek = Studentturn.value == "Intensivo" ? startdate.getDate() + 7 : startdate.getDate() + 15;
+        endate.setDate(theDayOfTheMonthOnNextWeek)
+        let ststartdate = startdate.toISOString().split("T")[0]
+        let stenddate = endate.toISOString().split("T")[0]
+        let stud = {
+            id:param,
+            name:Studentname.value,
+            lastname: Studentlastname.value,
+            shift:Studentturn.value,
+            startDate: ststartdate,
+            endDate: stenddate
+        }
+        edit_student(stud).then(()=> {
+            let modal = document.getElementById("modal")
+            modal.style.display= "block"
+            warningtitle.value = "Edición Guardada"
+            warningtext.value = "Tus cambios se han guardado correctamente"
+            warningok.value=exitEditing
+            warningcancel.value=exitEditing
+            modaltype.value=ModalType['info']
+        })    
     }
 
     function saveStudent() {
@@ -96,6 +113,10 @@
             modaltype.value=ModalType['warn']
         }
     }
+
+    function datehandler(ev) {
+        date.value = ev.target.value
+    }
 </script>
 <template>
     <Warning 
@@ -117,20 +138,24 @@
             <label for="lastname">Apellido: </label>
             <input type=text id="lastname" :value="Studentlastname"/>
         </div>
+        <div>
+            <label for="startdate">Fecha de inicio: </label>
+            <input type="date" id="startdate" :value="date" @change="(ev) => datehandler(ev)"/>
+        </div>
         <fieldset>
             <legend>Turno:</legend>
             <div id="radiocontainer">
                 <div>
-                    <input type=radio id="manana" value="Mañana" name="turno"/>
-                    <label for="manana">Mañana </label>
+                    <input type=radio id="Mañana" value="Mañana" name="turno"/>
+                    <label for="Mañana">Mañana </label>
                 </div>
                 <div>
-                    <input type=radio id="tarde" value="Tarde" name="turno"/>
-                    <label for="tarde">Tarde </label>
+                    <input type=radio id="Tarde" value="Tarde" name="turno"/>
+                    <label for="Tarde">Tarde </label>
                 </div>
                 <div>
-                    <input type=radio id="intensivo" value="Intensivo" name="turno"/>
-                    <label for="intensivo">Intensivo </label>
+                    <input type=radio id="Intensivo" value="Intensivo" name="turno"/>
+                    <label for="Intensivo">Intensivo </label>
                 </div>
             </div>
         </fieldset>

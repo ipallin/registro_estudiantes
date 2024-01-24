@@ -1,20 +1,21 @@
 <script setup>
     import {ref, onMounted, computed, onUnmounted} from "vue"
-    import alumnos from "../assets/mockdata/studentts.json"
+    import {get_Current_Students} from "../apiservice"
 
     const date = ref()
     const interval = ref()
+    const stlist = ref(new Array)
 
     const morning = computed(()=>{
-            return alumnos.alumnos.filter((alum) => { return alum.turno =="Mañana"}).length
+            return stlist.value.filter((alum) => { return alum.shift =="Mañana"}).length
         }
     )
     const afternoon = computed(()=>{
-            return alumnos.alumnos.filter((alum) => { return alum.turno =="Tarde"}).length
+            return stlist.value.filter((alum) => { return alum.shift =="Tarde"}).length
         }
     )
     const fullday = computed(()=>{
-            return alumnos.alumnos.filter((alum) => { return alum.turno =="Intensivo"}).length
+            return stlist.value.filter((alum) => { return alum.shift =="Intensivo"}).length
         }
     )
 
@@ -22,8 +23,8 @@
         return morning.value + afternoon.value + fullday.value
     })
 
-    onMounted(() => {
-
+    onMounted(async () => {
+        stlist.value = await get_Current_Students()
         interval.value = setInterval (()=>{
             date.value = new Date(Date.now()).toLocaleString()
         }, 1000)

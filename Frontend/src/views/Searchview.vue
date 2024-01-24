@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import {useRouter} from 'vue-router'
-import alumnos from "../assets/mockdata/studentts.json"
 import Warning from "../components/Warning.vue"
 import {ModalType} from "../types.js"
+import {get_Students, delete_student} from "../apiservice"
 
-const stdlist = ref(alumnos.alumnos);
+const stdlist = ref(new Array);
 const router = useRouter();
 
 const studentmap = ref({});
@@ -24,12 +24,16 @@ const warningcancel = ref(Function);
 
 onMounted(() => {
 
-    studentmap.value = stdlist.value.map((obj) => studentmap.value[obj.id]=obj);
-    namelist.value = stdlist.value.map(({nombre, apellido}) => `${apellido} ${nombre}`);
+    get_Students().then((res)=>{
+        stdlist.value = res
+        studentmap.value = stdlist.value.map((obj) => studentmap.value[obj.id]=obj);
+        namelist.value = stdlist.value.map(({name, lastname}) => `${lastname} ${name}`);
+        
+        let nameinput = document.getElementById("nameinput")
+        array.value = Object.values(studentmap.value)
+        autocomplete(nameinput, array.value)
+    })
     
-    let nameinput = document.getElementById("nameinput")
-    array.value = Object.values(studentmap.value)
-    autocomplete(nameinput, array.value)
 })
 
 function autocomplete(inp, arr) {
@@ -39,7 +43,7 @@ function autocomplete(inp, arr) {
             filteredlist.value = [];
         } else{
             filteredlist.value = arr.filter((elem) => {
-                let name = `${elem.apellido} ${elem.nombre}`
+                let name = `${elem.lastname} ${elem.name}`
                 return name.toUpperCase().includes(val.toUpperCase())
             })
         }
@@ -64,27 +68,43 @@ function closeModal () {
 }
 
 function deleteStudent(id) {
-    let nameinput = document.getElementById("nameinput")
-    delete studentmap.value[id];
-    namelist.value = Object.values(studentmap.value).map(({nombre, apellido}) => `${apellido} ${nombre}`);
-    nameinput.value = ""
-    const newimput = nameinput.cloneNode(true);
-    nameinput.parentNode.replaceChild(newimput, nameinput);
-    array.value = Object.values(studentmap.value)
-    autocomplete(newimput, array.value)
-    filteredlist.value = []
-    let modal = document.getElementById("modal")
-    modal.style.display= "block"
-    warningtitle.value = "Alumno Borrado"
-    warningtext.value = "El alumno se ha eliminado correctamente"
-    warningok.value=closeModal
-    warningcancel.value=closeModal
-    okattr.value = []
-    cancelattr.value = []
-    modaltype.value=ModalType['info']
+    delete_student(id).then((ok) => {
+        if (ok) {
+                get_Students().then((res)=>{
+                    let nameinput = document.getElementById("nameinput")
+                    nameinput.value = ""
+                    stdlist.value = res
+                    studentmap.value = stdlist.value.map((obj) => studentmap.value[obj.id]=obj);
+                    namelist.value = stdlist.value.map(({name, lastname}) => `${lastname} ${name}`);
+                    autocomplete(nameinput, namelist.value)
+                    filteredlist.value = []
+                    let modal = document.getElementById("modal")
+                    modal.style.display= "block"
+                    warningtitle.value = "Alumno Borrado"
+                    warningtext.value = "El alumno se ha eliminado correctamente"
+                    warningok.value=closeModal
+                    warningcancel.value=closeModal
+                    okattr.value = []
+                    cancelattr.value = []
+                    modaltype.value=ModalType['info']
+                })
+        } else {
+            let modal = document.getElementById("modal")
+            modal.style.display= "block"
+            warningtitle.value = "Error"
+            warningtext.value = "El alumno no ha podido eliminarse"
+            warningok.value=closeModal
+            warningcancel.value=closeModal
+            okattr.value = []
+            cancelattr.value = []
+            modaltype.value=ModalType['info']
+        }
+    })
 }
 
 function openEdit(id) {
+    let nameinput = document.getElementById("nameinput")
+    nameinput.value = ""
     const MyPath =`Editstudent/${id}`;
     const routeData = router.resolve({path: MyPath});
     window.open(routeData.href,'Edit','toolbar=no,status=no,menubar=no,location=center,scrollbars=no,resizable=no,height=500,width=657');
@@ -112,7 +132,7 @@ function openEdit(id) {
         <div id="autocomplete" class="autocomplete">
             <div v-for="elem in filteredlist" :key="elem.id" class="autocomplete-items">
                 <div class="itemcontainer">
-                    {{elem.apellido}} {{elem.nombre}}
+                    {{elem.lastname}} {{elem.name}}
                     <div id="buttonarea">
                         <button class="button" @click="() => {
                             handleDelete(elem.id)

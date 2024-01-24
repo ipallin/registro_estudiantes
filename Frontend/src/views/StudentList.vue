@@ -1,12 +1,14 @@
 <script setup>
 import { ref, computed, onMounted } from "vue"
-import alumnos from "../assets/mockdata/studentts.json"
+import {get_Current_Students} from "../apiservice"
 
 const entrynum = ref(5)
 const currentpage = ref(1)
 const open = ref(false)
 
-const stdlist = ref(alumnos.alumnos)
+const alumnos = ref(new Array)
+
+const stdlist = ref(new Array)
 
 const numpages = computed(() => {
     return Math.ceil(stdlist.value.length / entrynum.value)
@@ -48,13 +50,15 @@ function managefilter() {
             filterlist.push(check.value)
         }
     }
-    stdlist.value = alumnos.alumnos.filter((elem)=>{
-        return !filterlist.includes(elem.turno)
+    stdlist.value = alumnos.value.filter((elem)=>{
+        return !filterlist.includes(elem.shift)
     })
 
 }
 
-onMounted(()=>{
+onMounted(async()=>{
+    alumnos.value = await get_Current_Students()
+    stdlist.value = alumnos.value
     managefilter()
 })
 
@@ -96,9 +100,9 @@ onMounted(()=>{
             </thead>
             <tbody>
                 <tr v-for="index in range" >
-                    <td> {{ stdlist[index + offset - 1].apellido }}</td>
-                    <td> {{ stdlist[index + offset - 1].nombre }}</td>
-                    <td> {{ stdlist[index + offset - 1].turno }}</td>
+                    <td> {{ stdlist[index + offset - 1].lastname }}</td>
+                    <td> {{ stdlist[index + offset - 1].name }}</td>
+                    <td> {{ stdlist[index + offset - 1].shift }}</td>
                 </tr>
             </tbody>
             <tfoot>

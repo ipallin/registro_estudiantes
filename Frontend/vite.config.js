@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from 'node:url'
+import config from "./src/assets/config.json"
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -11,6 +12,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  },
+  server: {
+    proxy: {
+      "/api": `http://${config.API_HOST}:${config.API_PORT}`
     }
   }
 })
