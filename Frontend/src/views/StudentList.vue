@@ -70,6 +70,8 @@ onMounted(async()=>{
                 <tr>
                     <th> Apellido</th>
                     <th> Nombre</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Fin</th>
                     <div id="filtercontainer">
                         <th style="width: 100%; border: none;"> Turno</th>
                         <button style="color: white;" @click="open = !open">
@@ -95,19 +97,20 @@ onMounted(async()=>{
                             </fieldset>
                         </div>
                     </div>
-                    
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="index in range" >
                     <td> {{ stdlist[index + offset - 1].lastname }}</td>
                     <td> {{ stdlist[index + offset - 1].name }}</td>
+                    <td> {{ stdlist[index + offset - 1].startDate }}</td>
+                    <td> {{ stdlist[index + offset - 1].endDate }}</td>
                     <td> {{ stdlist[index + offset - 1].shift }}</td>
                 </tr>
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="3">
+                    <th colspan="5">
                         <div class="tablediv">
                             <button @click="currentpage--" :disabled="currentpage <= 1"><i class="fa-solid fa-angles-left"></i></button>
                             <label>{{ numpages == 0 ? numpages : currentpage }}/{{ numpages }}</label>
@@ -116,7 +119,7 @@ onMounted(async()=>{
                     </th>
                 </tr>
                 <tr>
-                    <td colspan="3"> 
+                    <td colspan="5"> 
                         <div style="display: flex; flex-direction: row; justify-content: space-around;">
                             <div id="5" class="tablediv tab selected"  @click="changetab(event, '5', 5)">
                                 <span>5</span>
@@ -170,7 +173,7 @@ tbody tr:nth-child(even) {
 }
 
 td, th {
-  width:33%;
+  width:20%;
   height:42px;
 }
 

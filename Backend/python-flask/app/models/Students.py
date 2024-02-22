@@ -1,7 +1,7 @@
 from marshmallow import fields
 from datetime import date
 import time
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 from app import db, ma
 
@@ -35,7 +35,7 @@ class StudentModel(db.Model):
     @classmethod
     def get_studentsbetweendates(cls, start, end):
         try:
-            return cls.query.filter(start < func.extract('epoch', cls.endDate) and end >func.extract('epoch', cls.endDate))
+            return cls.query.filter(or_(start <= func.extract('epoch', cls.startDate), end <= func.extract('epoch', cls.endDate)))
         except Exception as e:
             raise e  
 

@@ -10,18 +10,16 @@ export async function get_Current_Students() {
 
 export async function get_Students(start=null, end=null) {
     let url = `/api/StudentRecords/students`
-    let res
+
     if (start != null && end != null) {
-        let unixstart = Date.parse(start) / 1000
-        let unixend = Date.parse(end) / 1000
-        url += `?start=${unixstart}&&end=${unixend}`
+        url += `?start=${start}&end=${end}`
     }
-    else{
-        res = await axios({
-            method: "get",
-            url: url
-          })
-    } 
+
+    let res = await axios({
+        method: "get",
+        url: url
+    })
+
     return res.data.data
 }
 

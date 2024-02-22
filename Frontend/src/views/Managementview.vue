@@ -7,7 +7,8 @@
     const Studentname = ref();
     const Studentlastname = ref();
     const Studentturn = ref();
-    const date = ref();
+    const stdate = ref();
+    const edate = ref();
 
     const warningtitle = ref("")
     const warningtext = ref("")
@@ -25,8 +26,12 @@
         }
     })
 
-    function managedatechange(ev) {
-        date.value = ev.target.value
+    function managestdatechange(ev) {
+        stdate.value = ev.target.value
+    }
+
+    function manageenddatechange(ev) {
+        edate.value = ev.target.value
     }
 
     function keepEditting () {
@@ -38,7 +43,7 @@
         Studentname.value = document.getElementById("name").value
         Studentlastname.value = document.getElementById("lastname").value
         let modal = document.getElementById("modal")
-        if (Studentname.value == null  || Studentlastname.value == null || Studentturn.value == null || date.value == null) {
+        if (Studentname.value == null  || Studentlastname.value == null || Studentturn.value == null || stdate.value == null || edate.value == null) {
             warningtitle.value = "Campos en Blanco"
             warningtext.value = "Debes rellenar todos los campos solicitados para poder guardar un nuevo estudante"
             warningok.value=keepEditting
@@ -57,10 +62,8 @@
 
     function overwriteStudent() {
 
-        let startdate = new Date(date.value)
-        let endate = new Date(date.value)
-        const theDayOfTheMonthOnNextWeek = Studentturn.value == "Intensivo" ? startdate.getDate() + 7 : startdate.getDate() + 15;
-        endate.setDate(theDayOfTheMonthOnNextWeek)
+        let startdate = new Date(stdate.value)
+        let endate = new Date(edate.value)
         let ststartdate = startdate.toISOString().split("T")[0]
         let stenddate = endate.toISOString().split("T")[0]
         let stud = {
@@ -102,9 +105,15 @@
             <label for="lastname">Apellido: </label>
             <input type=text id="lastname" :value="Studentlastname"/>
         </div>
-        <div>
-            <label for="StartDate">Fecha de Inicio: </label>
-            <input type=date id="StartDate" @change="(ev) => managedatechange(ev)"/>
+        <div style="display: flex; flex-direction: row; justify-content: space-around;">
+            <div>
+                <label for="StartDate">Fecha de Inicio: </label>
+                <input type=date id="StartDate" @change="(ev) => managestdatechange(ev)"/>
+            </div>
+            <div>
+                <label for="EndDate">Fecha de Fin: </label>
+                <input type=date id="EndDate" @change="(ev) => manageenddatechange(ev)"/>
+            </div>
         </div>
         <fieldset>
             <legend>Turno:</legend>

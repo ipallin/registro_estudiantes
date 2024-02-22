@@ -13,7 +13,9 @@
     const Studentname = ref();
     const Studentlastname = ref();
     const Studentturn = ref();
-    const date = ref();
+    const startdate = ref();
+    const enddate = ref();
+    
     
 
     const warningtitle = ref("")
@@ -29,7 +31,8 @@
         Studentname.value = student.value.name
         Studentlastname.value = student.value.lastname
         Studentturn.value = student.value.shift
-        date.value = student.value.startDate
+        startdate.value = student.value.startDate
+        enddate.value = student.value.endDate
         let turnos = document.getElementsByName("turno")
         for (let turno of turnos){
             turno.checked = turno.value == Studentturn.value;
@@ -52,11 +55,9 @@
 
     function overwriteStudent() {
         const param = Number(route.params.student);
-        let startdate = new Date(date.value)
-        let endate = new Date(date.value)
-        const theDayOfTheMonthOnNextWeek = Studentturn.value == "Intensivo" ? startdate.getDate() + 7 : startdate.getDate() + 15;
-        endate.setDate(theDayOfTheMonthOnNextWeek)
-        let ststartdate = startdate.toISOString().split("T")[0]
+        let stardate = new Date(startdate.value)
+        let endate = new Date(enddate.value)
+        let ststartdate = stardate.toISOString().split("T")[0]
         let stenddate = endate.toISOString().split("T")[0]
         let stud = {
             id:param,
@@ -81,7 +82,7 @@
         Studentname.value = document.getElementById("name").value
         Studentlastname.value = document.getElementById("lastname").value
         let modal = document.getElementById("modal")
-        if (Studentname.value == student.value.nombre && Studentlastname.value == student.value.apellido && Studentturn.value == student.value.turno) {
+        if (Studentname.value == student.value.name && Studentlastname.value == student.value.lastname && Studentturn.value == student.value.turno && startdate.value == student.value.startDate && enddate.value == student.value.endDate) {
             warningtext.value = "No hay cambios en la información del estudiate"
             warningok.value=keepEditting
             warningcancel.value=keepEditting
@@ -114,8 +115,12 @@
         }
     }
 
-    function datehandler(ev) {
-        date.value = ev.target.value
+    function startdatehandler(ev) {
+        startdate.value = ev.target.value
+    }
+
+    function enddatehandler(ev) {
+        enddate.value = ev.target.value
     }
 </script>
 <template>
@@ -138,9 +143,15 @@
             <label for="lastname">Apellido: </label>
             <input type=text id="lastname" :value="Studentlastname"/>
         </div>
-        <div>
-            <label for="startdate">Fecha de inicio: </label>
-            <input type="date" id="startdate" :value="date" @change="(ev) => datehandler(ev)"/>
+        <div style="display: flex; flex-direction: row;">
+            <div>
+                <label for="startdate">Fecha de inicio: </label>
+                <input type="date" id="startdate" :value="startdate" @change="(ev) => startdatehandler(ev)"/>
+            </div>
+            <div>
+                <label for="enddate">Fecha de fin: </label>
+                <input type="date" id="enddate" :value="enddate" @change="(ev) => enddatehandler(ev)"/>
+            </div>
         </div>
         <fieldset>
             <legend>Turno:</legend>
